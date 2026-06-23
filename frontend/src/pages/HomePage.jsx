@@ -55,7 +55,7 @@ const HomePage = () => {
               <div className="sidebar-header flex items-center justify-between w-full">
                 <div className="brand-container flex items-center gap-2">
                   <img src="/logo.png" alt="Logo" className="brand-logo h-8 w-8 object-contain" />
-                  <span className="brand-name font-bold">Slap</span>
+                  <span className="brand-name font-bold">TalkDeck</span>
                 </div>
                 <div className="user-button-wrapper">
                   <UserButton />
