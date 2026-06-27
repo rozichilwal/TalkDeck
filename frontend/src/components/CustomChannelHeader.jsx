@@ -1,7 +1,8 @@
-import { HashIcon, LockIcon, UsersIcon, PinIcon, VideoIcon, MenuIcon } from "lucide-react";
+import { HashIcon, LockIcon, UsersIcon, PinIcon, VideoIcon, MenuIcon, TrashIcon } from "lucide-react";
 import { useChannelStateContext } from "stream-chat-react";
 import { useState } from "react";
 import { useUser, UserButton } from "@clerk/clerk-react";
+import toast from "react-hot-toast";
 import MembersModal from "./MembersModal";
 import PinnedMessagesModal from "./PinnedMessagesModal";
 import InviteModal from "./InviteModal";
@@ -22,6 +23,7 @@ const CustomChannelHeader = ({ onMenuClick }) => {
   );
 
   const isDM = channel.data?.member_count === 2 && channel.data?.id.includes("user_");
+  const isCreator = channel.data?.created_by_id === user.id || channel.data?.created_by?.id === user.id;
 
   const handleShowPinned = async () => {
     const channelState = await channel.query();
@@ -35,6 +37,19 @@ const CustomChannelHeader = ({ onMenuClick }) => {
       await channel.sendMessage({
         text: `I've started a video call. Join me here: ${callUrl}`,
       });
+    }
+  };
+
+  const handleDeleteChannel = async () => {
+    if (window.confirm("Are you sure you want to delete this channel? This action cannot be undone.")) {
+      try {
+        await channel.delete();
+        toast.success("Channel deleted successfully");
+        window.location.href = "/";
+      } catch (error) {
+        console.error("Error deleting channel:", error);
+        toast.error("Failed to delete channel");
+      }
     }
   };
 
@@ -97,6 +112,12 @@ const CustomChannelHeader = ({ onMenuClick }) => {
         <button className="hover:bg-[#F8F8F8] p-1 rounded" onClick={handleShowPinned}>
           <PinIcon className="size-4 text-[#616061]" />
         </button>
+
+        {isCreator && !isDM && (
+          <button className="hover:bg-[#F8F8F8] p-1 rounded" onClick={handleDeleteChannel} title="Delete Channel">
+            <TrashIcon className="size-4 text-red-500" />
+          </button>
+        )}
       </div>
 
       {showMembers && (
